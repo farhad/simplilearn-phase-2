@@ -1,0 +1,11 @@
+#############################################################
+#                                                           #
+#               Welcome to LockedMe!                        #
+#               Developed by: Farhad Faghihi                #
+#                                                           #
+#               SimpliLearn FullStack Java Development      #
+#               Phase 1 Assignment project                  #
+#                                                           #
+#############################################################
+#############################################################
+
