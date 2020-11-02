@@ -1,0 +1,9 @@
+Choose the operation number from the menu and press 'Enter':
+
+
+#1 - Show all files in the current directory
+#2 - Search for files
+#3 - Add a file
+#4 - Delete a file
+#0 - Exit the application
+
