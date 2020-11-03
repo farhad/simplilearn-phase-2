@@ -7,14 +7,19 @@ import org.junit.Test;
 import simplilearn.farhadfaghihi.navigation.AppNavigation;
 import simplilearn.farhadfaghihi.utils.FileUtils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 
-import static simplilearn.farhadfaghihi.utils.Consts.MAIN_MENU_FILE_PATH;
-import static simplilearn.farhadfaghihi.utils.Consts.WELCOME_MESSAGE_FILE_PATH;
+import static simplilearn.farhadfaghihi.utils.Consts.*;
 
-public class AppNavigationTest {
+/**
+ * because we need to write test for protected and private methods in [AppNavigation] class,
+ * we need to extend the class.
+ */
+public class AppNavigationTest extends AppNavigation {
+
+    public AppNavigationTest() {
+        getInstance();
+    }
 
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
@@ -35,17 +40,26 @@ public class AppNavigationTest {
 
 
     @Test
-    public void givenAppNavigation_whenCalledDisplayMenu_thenMainMenu() throws IOException {
+    public void givenAppNavigation_whenCalledDisplayWelcomeMessage_thenWelcomeMessage() throws IOException {
         // Arrange
         String welcomeMessage = FileUtils.readFileContent(WELCOME_MESSAGE_FILE_PATH);
-        String mainMenuMessage = FileUtils.readFileContent(MAIN_MENU_FILE_PATH);
-        String expectedOutput = welcomeMessage + mainMenuMessage + System.lineSeparator();
 
         // Act
-        AppNavigation appNavigation = AppNavigation.getInstance();
-        appNavigation.displayAppMenu();
+        displayWelcomeMessage();
 
         // Assert
-        Assert.assertEquals(expectedOutput, outContent.toString());
+        Assert.assertTrue(outContent.toString().contains(welcomeMessage));
+    }
+
+    @Test
+    public void givenAppNavigation_whenCallingDisplayMainMenu_thenMainMenu() throws IOException {
+        // Arrange
+        String mainMenu = FileUtils.readFileContent(MAIN_MENU_FILE_PATH);
+
+        // Act
+        displayMainMenu();
+
+        // Assert
+        Assert.assertTrue(outContent.toString().contains(mainMenu));
     }
 }
