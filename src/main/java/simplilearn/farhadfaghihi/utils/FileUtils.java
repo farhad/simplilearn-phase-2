@@ -23,4 +23,11 @@ public class FileUtils {
         bufferedReader.close();
         return result.toString();
     }
+
+    /**
+     * @return the current directory where the application started running
+     */
+    public static String getCurrentWorkingDirectory() {
+        return System.getProperty("user.dir");
+    }
 }

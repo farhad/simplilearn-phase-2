@@ -1,5 +1,6 @@
 package simplilearn.farhadfaghihi.navigation;
 
+import simplilearn.farhadfaghihi.dao.FileDao;
 import simplilearn.farhadfaghihi.utils.FileUtils;
 
 import java.io.IOException;
@@ -19,14 +20,18 @@ public class AppNavigation {
     private int lastSelectedOption = -1;
     private List<Integer> validOptions = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4));
 
+    private FileDao fileDao;
+    private String currentDirectory;
     private static AppNavigation instance;
 
-    protected AppNavigation() {
+    protected AppNavigation(FileDao fileDao, String currentDirectory) {
+        this.fileDao = fileDao;
+        this.currentDirectory = currentDirectory;
     }
 
-    public static AppNavigation getInstance() {
+    public static AppNavigation getInstance(FileDao fileDao, String currentDirectory) {
         if (instance == null)
-            instance = new AppNavigation();
+            instance = new AppNavigation(fileDao, currentDirectory);
         return instance;
     }
 
@@ -52,7 +57,9 @@ public class AppNavigation {
                     }
 
                     case 1: {
-                        // call filedao.displayallfiles
+                        List<String> allFiles = fileDao.getAllFileNames(currentDirectory);
+                        printFileNamesToConsole(allFiles);
+                        break;
                     }
 
                     case 2: {
@@ -112,6 +119,12 @@ public class AppNavigation {
     private void printFileToConsole(String fileName) throws IOException {
         String mainMenu = FileUtils.readFileContent(fileName);
         System.out.println(mainMenu);
+    }
+
+    private void printFileNamesToConsole(List<String> fileNames) {
+        // todo : show them in table format using formatted text
+        // todo : show additional information about a file
+        fileNames.forEach(System.out::println);
     }
 
     private boolean isValidOption(String token) {
