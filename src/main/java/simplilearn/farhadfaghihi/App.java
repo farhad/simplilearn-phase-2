@@ -6,13 +6,14 @@ import simplilearn.farhadfaghihi.navigation.AppNavigation;
 import simplilearn.farhadfaghihi.utils.FileUtils;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 public class App {
     public static void main(String[] args) {
 
         try {
             FileDao fileDao = new FileDaoImpl();
-            String currentWorkingDir = FileUtils.getCurrentWorkingDirectory();
+            Path currentWorkingDir = FileUtils.getCurrentWorkingDirectory();
             AppNavigation appNavigation = AppNavigation.getInstance(fileDao, currentWorkingDir);
             appNavigation.displayAppMenu();
         } catch (IOException e) {

@@ -1,14 +1,14 @@
 package simplilearn.farhadfaghihi.dao;
 
-import java.util.ArrayList;
+import java.nio.file.Path;
 import java.util.List;
 
 public interface FileDao {
-    List<String> getAllFileNames(String currentDirectory);
+    List<String> getAllFileNames(Path path);
 
-    boolean addFile(String fileName, String fileContent);
+    boolean addFile(Path path, String fileContent);
 
-    boolean deleteFile(String fileName);
+    boolean deleteFile(Path path);
 
-    List<String> searchFiles(String fileName);
+    List<String> searchFiles(Path path, String fileName);
 }

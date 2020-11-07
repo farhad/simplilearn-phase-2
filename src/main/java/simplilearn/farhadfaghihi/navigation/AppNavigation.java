@@ -4,6 +4,7 @@ import simplilearn.farhadfaghihi.dao.FileDao;
 import simplilearn.farhadfaghihi.utils.FileUtils;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,15 +22,15 @@ public class AppNavigation {
     private List<Integer> validOptions = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4));
 
     private FileDao fileDao;
-    private String currentDirectory;
+    private Path currentDirectory;
     private static AppNavigation instance;
 
-    protected AppNavigation(FileDao fileDao, String currentDirectory) {
+    protected AppNavigation(FileDao fileDao, Path currentDirectory) {
         this.fileDao = fileDao;
         this.currentDirectory = currentDirectory;
     }
 
-    public static AppNavigation getInstance(FileDao fileDao, String currentDirectory) {
+    public static AppNavigation getInstance(FileDao fileDao, Path currentDirectory) {
         if (instance == null)
             instance = new AppNavigation(fileDao, currentDirectory);
         return instance;

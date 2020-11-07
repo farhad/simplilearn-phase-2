@@ -3,6 +3,8 @@ package simplilearn.farhadfaghihi.utils;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class FileUtils {
 
@@ -27,7 +29,7 @@ public class FileUtils {
     /**
      * @return the current directory where the application started running
      */
-    public static String getCurrentWorkingDirectory() {
-        return System.getProperty("user.dir");
+    public static Path getCurrentWorkingDirectory() {
+        return Paths.get(System.getProperty("user.dir"));
     }
 }
