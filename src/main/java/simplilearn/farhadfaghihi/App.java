@@ -15,7 +15,7 @@ public class App {
             FileDao fileDao = new FileDaoImpl();
             Path currentWorkingDir = FileUtils.getCurrentWorkingDirectory();
             AppNavigation appNavigation = AppNavigation.getInstance(fileDao, currentWorkingDir);
-            appNavigation.displayAppMenu();
+            appNavigation.start();
         } catch (IOException e) {
             System.out.println("unexpected error -> application terminated");
             System.out.println(e.getMessage());

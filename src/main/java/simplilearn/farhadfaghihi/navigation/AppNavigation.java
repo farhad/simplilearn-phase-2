@@ -5,6 +5,7 @@ import simplilearn.farhadfaghihi.utils.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,11 +19,12 @@ import static simplilearn.farhadfaghihi.utils.Consts.*;
 public class AppNavigation {
 
     private final Scanner scanner = new Scanner(System.in);
+    private final FileDao fileDao;
+    private final Path currentDirectory;
+
     private int lastSelectedOption = -1;
     private List<Integer> validOptions = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4));
 
-    private FileDao fileDao;
-    private Path currentDirectory;
     private static AppNavigation instance;
 
     protected AppNavigation(FileDao fileDao, Path currentDirectory) {
@@ -36,7 +38,7 @@ public class AppNavigation {
         return instance;
     }
 
-    public void displayAppMenu() throws IOException {
+    public void start() throws IOException {
         if (lastSelectedOption == -1) {
             displayWelcomeMessage();
         }
@@ -50,16 +52,21 @@ public class AppNavigation {
         while (lastSelectedOption != 0) {
             String token = scanner.next();
             if (isValidOption(token)) {
-                lastSelectedOption = Integer.parseInt(token);
-                switch (lastSelectedOption) {
+                int tokenInt = Integer.parseInt(token);
+                switch (tokenInt) {
                     case 0: {
-                        displayFarewellMessageAndExit();
+                        if (lastSelectedOption == -1)
+                            displayFarewellMessageAndExit();
+                        else
+                            displayMainMenu();
+
                         break;
                     }
 
                     case 1: {
                         List<String> allFiles = fileDao.getAllFileNames(currentDirectory);
                         printFileNamesToConsole(allFiles);
+                        displayMainMenu();
                         break;
                     }
 
@@ -77,13 +84,33 @@ public class AppNavigation {
                         displayDeleteFileMenu();
                         break;
                     }
-
-                    default: {
-
-                    }
                 }
+                lastSelectedOption = tokenInt;
             } else {
-                displayInvalidOptionMessage();
+                if (lastSelectedOption == 2) {
+                    List<String> searchResult = fileDao.searchFiles(currentDirectory, token);
+                    System.out.println("Results found: " + searchResult.size());
+                    printFileNamesToConsole(searchResult);
+
+                } else if (lastSelectedOption == 3) {
+                    Path path = Paths.get(currentDirectory.toString() + "/" + token);
+                    fileDao.addFile(path, "");
+                    System.out.println("file added successfully");
+
+                } else if (lastSelectedOption == 4) {
+                    Path path = Paths.get(currentDirectory.toString() + "/" + token);
+                    boolean result = fileDao.deleteFile(path);
+                    if (result) {
+                        System.out.println("file deleted successfully");
+                    } else {
+                        System.out.println("file deletion failed");
+                    }
+
+                } else {
+                    displayInvalidOptionMessage();
+                }
+
+                displayMainMenu();
             }
         }
     }
@@ -123,9 +150,8 @@ public class AppNavigation {
     }
 
     private void printFileNamesToConsole(List<String> fileNames) {
-        // todo : show them in table format using formatted text
-        // todo : show additional information about a file
         fileNames.forEach(System.out::println);
+        System.out.println();
     }
 
     private boolean isValidOption(String token) {

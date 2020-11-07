@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,8 @@ public class FileDaoImpl implements FileDao {
 
         ArrayList<String> fileNames = new ArrayList<>();
         for (File item : files) {
-            fileNames.add(item.getName());
+            if (item.isFile())
+                fileNames.add(item.getName());
         }
 
         QuickSorter<String> quickSorter = new QuickSorter<>();
@@ -33,7 +35,8 @@ public class FileDaoImpl implements FileDao {
         try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
             fileOutputStream.write(fileContent.getBytes());
             return true;
-        } catch (IOException e) {
+        } catch (IOException exception) {
+            System.out.println("adding file failed -> " + exception.getMessage());
             return false;
         }
     }
@@ -41,10 +44,13 @@ public class FileDaoImpl implements FileDao {
     @Override
     public boolean deleteFile(Path path) {
         try {
-            Files.deleteIfExists(path);
+            Files.delete(path);
             return true;
+        } catch (NoSuchFileException exception) {
+            System.out.println("deleting file failed -> no such file");
+            return false;
         } catch (IOException exception) {
-            exception.printStackTrace();
+            System.out.println("deleting file failed -> " + exception.getMessage());
             return false;
         }
     }
