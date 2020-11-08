@@ -8,8 +8,6 @@ import simplilearn.farhadfaghihi.utils.FileUtils;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -20,8 +18,6 @@ import static simplilearn.farhadfaghihi.utils.Consts.*;
  */
 public class AppNavigation {
 
-    private final List<Integer> validOptions = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4));
-    private final Scanner scanner = new Scanner(System.in);
     private final FileDao fileDao;
     private final Path currentDirectory;
 
@@ -45,75 +41,82 @@ public class AppNavigation {
             displayWelcomeMessage();
         }
 
-        displayMainMenu();
-
-        readMenuOptionFromConsole();
+        runMainMenu();
     }
 
-    private void readMenuOptionFromConsole() throws IOException {
+    private void runMainMenu() throws IOException {
+        displayMainMenu();
+
+        Scanner scanner = new Scanner(System.in);
         while (lastSelectedOption != 0) {
             String token = scanner.next();
-            if (isValidOption(token)) {
-                int tokenInt = Integer.parseInt(token);
-                switch (tokenInt) {
-                    case 0: {
-                        if (lastSelectedOption == -1)
-                            displayFarewellMessageAndExit();
-                        else
-                            displayMainMenu();
-
-                        break;
-                    }
-
-                    case 1: {
-                        OperationResult allFilesResult = fileDao.getAllFiles(currentDirectory);
-                        printFileNamesToConsole(allFilesResult.getFileObjects());
-                        displayMainMenu();
-                        break;
-                    }
-
-                    case 2: {
-                        displaySearchFilesMenu();
-                        break;
-                    }
-
-                    case 3: {
-                        displayAddNewFileMenu();
-                        break;
-                    }
-
-                    case 4: {
-                        displayDeleteFileMenu();
-                        break;
-                    }
-                }
-                lastSelectedOption = tokenInt;
+            if (isNumericToken(token)) {
+                processMainMenuInput(token);
             } else {
-                if (lastSelectedOption == 2) {
-                    OperationResult searchResult = fileDao.searchFiles(currentDirectory, token);
-                    if (searchResult.isSuccessful()) {
-                        System.out.println("Results found: " + searchResult.getFileObjects().size());
-                        printFileNamesToConsole(searchResult.getFileObjects());
-                    } else {
-                        System.out.println(searchResult.getMessage());
-                    }
-                } else if (lastSelectedOption == 3) {
-                    Path path = Paths.get(currentDirectory.toString() + "/" + token);
-                    OperationResult operationResult = fileDao.addFile(path, "");
-                    System.out.println(operationResult.getMessage());
-
-                } else if (lastSelectedOption == 4) {
-                    Path path = Paths.get(currentDirectory.toString() + "/" + token);
-                    OperationResult operationResult = fileDao.deleteFile(path);
-                    System.out.println(operationResult.getMessage());
-
-                } else {
-                    displayInvalidOptionMessage();
-                }
-
-                displayMainMenu();
+                processSubMenuInput(token);
             }
         }
+
+        scanner.close();
+        displayFarewellMessageAndExit();
+    }
+
+    private void processMainMenuInput(String token) throws IOException {
+        int tokenInt = Integer.parseInt(token);
+        switch (tokenInt) {
+            case 1: {
+                OperationResult allFilesResult = fileDao.getAllFiles(currentDirectory);
+                printFileObjectsToConsole(allFilesResult.getFileObjects());
+
+                displayMainMenu();
+                break;
+            }
+            case 2: {
+                displaySearchFilesMenu();
+                break;
+            }
+            case 3: {
+                displayAddNewFileMenu();
+                break;
+            }
+            case 4: {
+                displayDeleteFileMenu();
+                break;
+            }
+            default: {
+                if (tokenInt != 0)
+                    displayInvalidOptionMessage();
+                break;
+            }
+        }
+
+        lastSelectedOption = tokenInt;
+    }
+
+    private void processSubMenuInput(String token) throws IOException {
+        if (lastSelectedOption == 2) {
+            OperationResult searchResult = fileDao.searchFiles(currentDirectory, token);
+            if (searchResult.isSuccessful()) {
+                System.out.println("Results found: " + searchResult.getFileObjects().size());
+                printFileObjectsToConsole(searchResult.getFileObjects());
+            } else {
+                System.out.println(searchResult.getMessage());
+            }
+        } else if (lastSelectedOption == 3) {
+            Path path = Paths.get(currentDirectory.toString() + "/" + token);
+            OperationResult operationResult = fileDao.addFile(path, "");
+            System.out.println(operationResult.getMessage() + System.lineSeparator());
+
+        } else if (lastSelectedOption == 4) {
+            Path path = Paths.get(currentDirectory.toString() + "/" + token);
+            OperationResult operationResult = fileDao.deleteFile(path);
+            System.out.println(operationResult.getMessage() + System.lineSeparator());
+
+        } else {
+            displayInvalidOptionMessage();
+        }
+
+        displayMainMenu();
     }
 
     protected void displayWelcomeMessage() throws IOException {
@@ -150,20 +153,20 @@ public class AppNavigation {
         System.out.println(mainMenu);
     }
 
-    private void printFileNamesToConsole(List<FileObject> fileNames) {
+    private void printFileObjectsToConsole(List<FileObject> fileNames) {
         fileNames.forEach(fileObject -> {
-            System.out.println(fileObject.getNameAndExtension());
+            String template = "%1$-32s %2$-16s %3$-16s %n";
+            System.out.printf(template, fileObject.getNameAndExtension(), fileObject.getType(), fileObject.getTotalSize());
         });
         System.out.println();
     }
 
-    private boolean isValidOption(String token) {
+    private boolean isNumericToken(String token) {
         if (token == null)
             return false;
-
         try {
-            int option = Integer.parseInt(token);
-            return validOptions.contains(option);
+            Integer.parseInt(token);
+            return true;
         } catch (Exception exception) {
             return false;
         }

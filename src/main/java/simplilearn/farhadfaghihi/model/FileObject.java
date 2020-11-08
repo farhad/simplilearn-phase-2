@@ -45,6 +45,14 @@ public class FileObject implements Comparable {
         isDirectory = directory;
     }
 
+    public String getType() {
+        if (isDirectory()) {
+            return "FOLDER";
+        } else {
+            return "FILE";
+        }
+    }
+
     @Override
     public int compareTo(Object other) {
         return this.nameAndExtension.compareTo(((FileObject) other).nameAndExtension);

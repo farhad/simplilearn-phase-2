@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,7 @@ public class FileDaoImpl implements FileDao {
             return new OperationResult(MESSAGE_SUCCESS, true, sortedList);
 
         } catch (Exception exception) {
-            String message = MESSAGE_FAILED + " -> " + exception.getCause();
+            String message = MESSAGE_FAILED + " -> " + exception.getLocalizedMessage();
             return new OperationResult(message, false, new ArrayList<>());
         }
     }
@@ -52,7 +53,7 @@ public class FileDaoImpl implements FileDao {
             fileOutputStream.write(fileContent.getBytes());
             return new OperationResult(MESSAGE_SUCCESS, true, new ArrayList<>());
         } catch (IOException exception) {
-            String message = MESSAGE_FAILED + " -> " + exception.getCause();
+            String message = MESSAGE_FAILED + " -> " + exception.getLocalizedMessage();
             return new OperationResult(message, false, new ArrayList<>());
         }
     }
@@ -62,8 +63,11 @@ public class FileDaoImpl implements FileDao {
         try {
             Files.delete(path);
             return new OperationResult(MESSAGE_SUCCESS, true, new ArrayList<>());
+        } catch (NoSuchFileException exception) {
+            String message = MESSAGE_FAILED + " -> " + path.toFile().getName() + " not found!";
+            return new OperationResult(message, false, new ArrayList<>());
         } catch (Exception exception) {
-            String message = MESSAGE_FAILED + " -> " + exception.getCause();
+            String message = MESSAGE_FAILED + " -> " + exception.getLocalizedMessage();
             return new OperationResult(message, false, new ArrayList<>());
         }
     }

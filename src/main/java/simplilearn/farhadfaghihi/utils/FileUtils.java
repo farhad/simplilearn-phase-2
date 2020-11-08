@@ -44,7 +44,13 @@ public class FileUtils {
     }
 
     public static String getSizeInKB(File file) {
-        long lengthKB = file.length() / 1024;
-        return lengthKB + " KB";
+        long sizeB = file.length();
+        if (sizeB < 1024) {
+            return sizeB + " B";
+        } else {
+            long sizeKB = sizeB / 1024;
+            return sizeKB + " KB";
+        }
+
     }
 }
