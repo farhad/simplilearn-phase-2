@@ -53,7 +53,7 @@ public class AppNavigation {
             if (isNumericToken(token)) {
                 processMainMenuInput(token);
             } else {
-                processSubMenuInput(token);
+                processSubMenuInput(token, scanner);
             }
         }
 
@@ -64,25 +64,41 @@ public class AppNavigation {
     private void processMainMenuInput(String token) throws IOException {
         int tokenInt = Integer.parseInt(token);
         switch (tokenInt) {
+            case 0: {
+                if (lastSelectedOption == 9)
+                    displayFarewellMessageAndExit();
+                break;
+            }
             case 1: {
+                lastSelectedOption = tokenInt;
                 OperationResult allFilesResult = fileDao.getAllFiles(currentDirectory);
                 printFileObjectsToConsole(allFilesResult.getFileObjects());
 
-                displayMainMenu();
+                displayContinueOrReturnOption();
                 break;
             }
             case 2: {
+                lastSelectedOption = tokenInt;
                 displaySearchFilesMenu();
                 break;
             }
             case 3: {
+                lastSelectedOption = tokenInt;
                 displayAddNewFileMenu();
                 break;
             }
             case 4: {
+                lastSelectedOption = tokenInt;
                 displayDeleteFileMenu();
                 break;
             }
+
+            case 9: {
+                lastSelectedOption = tokenInt;
+                displayMainMenu();
+                break;
+            }
+
             default: {
                 if (tokenInt != 0)
                     displayInvalidOptionMessage();
@@ -90,10 +106,10 @@ public class AppNavigation {
             }
         }
 
-        lastSelectedOption = tokenInt;
+
     }
 
-    private void processSubMenuInput(String token) throws IOException {
+    private void processSubMenuInput(String token, Scanner scanner) throws IOException {
         if (lastSelectedOption == 2) {
             OperationResult searchResult = fileDao.searchFiles(currentDirectory, token);
             if (searchResult.isSuccessful()) {
@@ -102,6 +118,7 @@ public class AppNavigation {
             } else {
                 System.out.println(searchResult.getMessage());
             }
+
         } else if (lastSelectedOption == 3) {
             Path path = Paths.get(currentDirectory.toString() + "/" + token);
             OperationResult operationResult = fileDao.addFile(path, "");
@@ -116,36 +133,61 @@ public class AppNavigation {
             displayInvalidOptionMessage();
         }
 
-        displayMainMenu();
+        displayContinueOrReturnOption();
     }
 
     protected void displayWelcomeMessage() throws IOException {
-        printFileToConsole(WELCOME_MESSAGE_FILE_PATH);
+        printFileToConsole(WELCOME_MESSAGE_PATH);
     }
 
     protected void displayMainMenu() throws IOException {
-        printFileToConsole(MAIN_MENU_FILE_PATH);
+        printFileToConsole(MAIN_MENU_PATH);
     }
 
     protected void displayFarewellMessageAndExit() throws IOException {
-        printFileToConsole(FAREWELL_MESSAGE_FILE_PATH);
+        printFileToConsole(FAREWELL_MESSAGE_PATH);
         System.exit(0);
     }
 
+    protected void displayContinueOrReturnOption() {
+        switch (lastSelectedOption) {
+            case 1: {
+                System.out.println("Press 9 to return to the main menu:");
+                break;
+            }
+
+            case 2: {
+                System.out.println("Enter a file name to search again or Press 9 to return to the main menu:");
+                break;
+            }
+
+            case 3: {
+                System.out.println("Enter a file name to add again or Press 9 to return to the main menu:");
+                break;
+            }
+
+            case 4: {
+                System.out.println("Enter a file name to delete again or Press 9 to return to the main menu:");
+                break;
+            }
+        }
+
+    }
+
     protected void displaySearchFilesMenu() throws IOException {
-        printFileToConsole(SEARCH_MENU_FILE_PATH);
+        printFileToConsole(SEARCH_MENU_PATH);
     }
 
     protected void displayAddNewFileMenu() throws IOException {
-        printFileToConsole(ADD_MENU_FIRST_FILE_PATH);
+        printFileToConsole(ADD_MENU_FIRST_PATH);
     }
 
     protected void displayDeleteFileMenu() throws IOException {
-        printFileToConsole(DELETE_MENU_FILE_PATH);
+        printFileToConsole(DELETE_MENU_PATH);
     }
 
     protected void displayInvalidOptionMessage() throws IOException {
-        printFileToConsole(INVALID_OPTION_MESSAGE_FILE_PATH);
+        printFileToConsole(INVALID_OPTION_MESSAGE_FILE);
     }
 
     private void printFileToConsole(String fileName) throws IOException {
