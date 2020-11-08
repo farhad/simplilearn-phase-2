@@ -1,70 +1,88 @@
 package simplilearn.farhadfaghihi.dao;
 
+import simplilearn.farhadfaghihi.model.FileObject;
+import simplilearn.farhadfaghihi.model.OperationResult;
+import simplilearn.farhadfaghihi.utils.FileUtils;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FileDaoImpl implements FileDao {
 
+    private static final String MESSAGE_SUCCESS = "operation successful";
+    private static final String MESSAGE_FAILED = "operation failed";
+
     @Override
-    public List<String> getAllFileNames(Path path) {
+    public OperationResult getAllFiles(Path path) {
         File[] files = path.toFile().listFiles();
 
         if (files == null) {
-            return new ArrayList<>();
+            return new OperationResult(MESSAGE_SUCCESS, true, new ArrayList<>());
         }
 
-        ArrayList<String> fileNames = new ArrayList<>();
-        for (File item : files) {
-            if (item.isFile())
-                fileNames.add(item.getName());
-        }
+        try {
+            ArrayList<FileObject> fileObjects = new ArrayList<>();
+            for (File item : files) {
+                String nameAndExtension = item.getName();
+                String lastModifiedTime = FileUtils.getFileLastModifiedTime(item);
+                String size = FileUtils.getSizeInKB(item);
+                FileObject fileObject = new FileObject(nameAndExtension, lastModifiedTime, size, item.isDirectory());
+                fileObjects.add(fileObject);
+            }
 
-        QuickSorter<String> quickSorter = new QuickSorter<>();
-        return quickSorter.sort(fileNames);
+            QuickSorter<FileObject> quickSorter = new QuickSorter<>();
+            List<FileObject> sortedList = quickSorter.sort(fileObjects);
+            return new OperationResult(MESSAGE_SUCCESS, true, sortedList);
+
+        } catch (Exception exception) {
+            String message = MESSAGE_FAILED + " -> " + exception.getCause();
+            return new OperationResult(message, false, new ArrayList<>());
+        }
     }
 
     @Override
-    public boolean addFile(Path path, String fileContent) {
+    public OperationResult addFile(Path path, String fileContent) {
         File file = path.toFile();
         try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
             fileOutputStream.write(fileContent.getBytes());
-            return true;
+            return new OperationResult(MESSAGE_SUCCESS, true, new ArrayList<>());
         } catch (IOException exception) {
-            System.out.println("adding file failed -> " + exception.getMessage());
-            return false;
+            String message = MESSAGE_FAILED + " -> " + exception.getCause();
+            return new OperationResult(message, false, new ArrayList<>());
         }
     }
 
     @Override
-    public boolean deleteFile(Path path) {
+    public OperationResult deleteFile(Path path) {
         try {
             Files.delete(path);
-            return true;
-        } catch (NoSuchFileException exception) {
-            System.out.println("deleting file failed -> no such file");
-            return false;
-        } catch (IOException exception) {
-            System.out.println("deleting file failed -> " + exception.getMessage());
-            return false;
+            return new OperationResult(MESSAGE_SUCCESS, true, new ArrayList<>());
+        } catch (Exception exception) {
+            String message = MESSAGE_FAILED + " -> " + exception.getCause();
+            return new OperationResult(message, false, new ArrayList<>());
         }
     }
 
     @Override
-    public ArrayList<String> searchFiles(Path path, String fileName) {
-        List<String> allFiles = getAllFileNames(path);
-        ArrayList<String> matchingFiles = new ArrayList<>();
-        allFiles.forEach(name -> {
-            if (name.toLowerCase().contains(fileName.toLowerCase())) {
-                matchingFiles.add(name);
-            }
-        });
+    public OperationResult searchFiles(Path path, String fileName) {
+        OperationResult allFilesResult = getAllFiles(path);
 
-        return matchingFiles;
+        if (allFilesResult.isSuccessful()) {
+            ArrayList<FileObject> matchingFiles = new ArrayList<>();
+            allFilesResult.getFileObjects().forEach(fileObj -> {
+                if (fileObj.getNameAndExtension().contains(fileName.toLowerCase())) {
+                    matchingFiles.add(fileObj);
+                }
+            });
+
+            return new OperationResult(MESSAGE_FAILED, true, matchingFiles);
+        } else {
+            return new OperationResult(MESSAGE_FAILED, false, new ArrayList<>());
+        }
     }
 }

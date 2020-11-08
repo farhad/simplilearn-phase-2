@@ -1,14 +1,15 @@
 package simplilearn.farhadfaghihi.dao;
 
+import simplilearn.farhadfaghihi.model.OperationResult;
+
 import java.nio.file.Path;
-import java.util.List;
 
 public interface FileDao {
-    List<String> getAllFileNames(Path path);
+    OperationResult getAllFiles(Path path);
 
-    boolean addFile(Path path, String fileContent);
+    OperationResult addFile(Path path, String fileContent);
 
-    boolean deleteFile(Path path);
+    OperationResult deleteFile(Path path);
 
-    List<String> searchFiles(Path path, String fileName);
+    OperationResult searchFiles(Path path, String fileName);
 }

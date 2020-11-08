@@ -6,6 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 import simplilearn.farhadfaghihi.dao.FileDao;
 import simplilearn.farhadfaghihi.dao.FileDaoImpl;
+import simplilearn.farhadfaghihi.model.FileObject;
+import simplilearn.farhadfaghihi.model.OperationResult;
 import simplilearn.farhadfaghihi.utils.FileUtils;
 
 import java.io.IOException;
@@ -71,13 +73,34 @@ public class FileDaoImplTest {
         FileDao fileDao = new FileDaoImpl();
 
         // Act
-        List<String> files = fileDao.getAllFileNames(PATH);
+        OperationResult allFilesResult = fileDao.getAllFiles(PATH);
+        List<FileObject> files = allFilesResult.getFileObjects();
 
-        // Arrange
+        // Assert
+        Assert.assertTrue(allFilesResult.isSuccessful());
+
         Assert.assertEquals(files.size(), 3);
-        Assert.assertEquals(files.get(0), fileNames.get(0));
-        Assert.assertEquals(files.get(1), fileNames.get(1));
-        Assert.assertEquals(files.get(2), fileNames.get(2));
+
+        Assert.assertEquals(files.get(0).getNameAndExtension(), fileNames.get(0));
+        Assert.assertEquals(files.get(1).getNameAndExtension(), fileNames.get(1));
+        Assert.assertEquals(files.get(2).getNameAndExtension(), fileNames.get(2));
+    }
+
+    @Test
+    public void givenPathWithNoFilesOrFolders_whenFileDaoGetAllFiles_thenEmptyList() throws IOException {
+        // Arrange
+        deleteSampleFiles();
+
+        FileDao fileDao = new FileDaoImpl();
+
+        // Act
+        OperationResult allFilesResult = fileDao.getAllFiles(PATH);
+        List<FileObject> files = allFilesResult.getFileObjects();
+
+        // Assert
+        Assert.assertTrue(allFilesResult.isSuccessful());
+
+        Assert.assertEquals(files.size(), 0);
     }
 
     @Test
@@ -86,13 +109,17 @@ public class FileDaoImplTest {
         FileDao fileDao = new FileDaoImpl();
 
         // Act
-        List<String> files = fileDao.getAllFileNames(PATH);
+        OperationResult allFilesResult = fileDao.getAllFiles(PATH);
+        List<FileObject> files = allFilesResult.getFileObjects();
 
-        // Arrange
+        // Assert
+        Assert.assertTrue(allFilesResult.isSuccessful());
+
         Assert.assertEquals(files.size(), 3);
-        Assert.assertEquals(files.get(0), fileNames.get(0));
-        Assert.assertEquals(files.get(1), fileNames.get(1));
-        Assert.assertEquals(files.get(2), fileNames.get(2));
+
+        Assert.assertEquals(files.get(0).getNameAndExtension(), fileNames.get(0));
+        Assert.assertEquals(files.get(1).getNameAndExtension(), fileNames.get(1));
+        Assert.assertEquals(files.get(2).getNameAndExtension(), fileNames.get(2));
     }
 
     @Test
@@ -101,10 +128,10 @@ public class FileDaoImplTest {
         FileDao fileDao = new FileDaoImpl();
 
         // Act
-        boolean result = fileDao.addFile(FILE_TO_ADD, "test");
+        OperationResult addFileResult = fileDao.addFile(FILE_TO_ADD, "test");
 
         // Assert
-        Assert.assertTrue(result);
+        Assert.assertTrue(addFileResult.isSuccessful());
 
         // Act
         String fileContent = FileUtils.readFileContent(FILE_TO_ADD.toString());
@@ -113,14 +140,18 @@ public class FileDaoImplTest {
         Assert.assertEquals(fileContent, "test");
 
         // Act
-        List<String> files = fileDao.getAllFileNames(PATH);
+        OperationResult getAllFilesResult = fileDao.getAllFiles(PATH);
+        List<FileObject> files = getAllFilesResult.getFileObjects();
 
         // Assert
+        Assert.assertTrue(getAllFilesResult.isSuccessful());
+
         Assert.assertEquals(files.size(), 4);
-        Assert.assertEquals(files.get(0), fileNames.get(0));
-        Assert.assertEquals(files.get(1), fileNames.get(1));
-        Assert.assertEquals(files.get(2), fileNames.get(2));
-        Assert.assertEquals(files.get(3), FILE_TO_ADD_NAME);
+
+        Assert.assertEquals(files.get(0).getNameAndExtension(), fileNames.get(0));
+        Assert.assertEquals(files.get(1).getNameAndExtension(), fileNames.get(1));
+        Assert.assertEquals(files.get(2).getNameAndExtension(), fileNames.get(2));
+        Assert.assertEquals(files.get(3).getNameAndExtension(), FILE_TO_ADD_NAME);
     }
 
     @Test
@@ -129,67 +160,98 @@ public class FileDaoImplTest {
         FileDao fileDao = new FileDaoImpl();
 
         // Act
-        boolean fileAdded = fileDao.addFile(FILE_TO_ADD, "test");
+        OperationResult addFileResult = fileDao.addFile(FILE_TO_ADD, "test");
 
         // Assert
-        Assert.assertTrue(fileAdded);
+        Assert.assertTrue(addFileResult.isSuccessful());
 
         // Act
-        List<String> files = fileDao.getAllFileNames(PATH);
+        OperationResult getAllFilesResult = fileDao.getAllFiles(PATH);
+        List<FileObject> files = getAllFilesResult.getFileObjects();
 
         // Assert
+        Assert.assertTrue(getAllFilesResult.isSuccessful());
+
         Assert.assertEquals(files.size(), 4);
-        Assert.assertEquals(files.get(0), fileNames.get(0));
-        Assert.assertEquals(files.get(1), fileNames.get(1));
-        Assert.assertEquals(files.get(2), fileNames.get(2));
-        Assert.assertEquals(files.get(3), FILE_TO_ADD_NAME);
+
+        Assert.assertEquals(files.get(0).getNameAndExtension(), fileNames.get(0));
+        Assert.assertEquals(files.get(1).getNameAndExtension(), fileNames.get(1));
+        Assert.assertEquals(files.get(2).getNameAndExtension(), fileNames.get(2));
+        Assert.assertEquals(files.get(3).getNameAndExtension(), FILE_TO_ADD_NAME);
 
         // Act
-        boolean fileDeleted = fileDao.deleteFile(FILE_TO_DELETE);
+        OperationResult fileDeleteResult = fileDao.deleteFile(FILE_TO_DELETE);
 
         // Assert
-        Assert.assertTrue(fileDeleted);
+        Assert.assertTrue(fileDeleteResult.isSuccessful());
 
         // Act
-        List<String> updatedFiles = fileDao.getAllFileNames(PATH);
+        OperationResult updatedGetAllFiles = fileDao.getAllFiles(PATH);
+        List<FileObject> updatedFiles = updatedGetAllFiles.getFileObjects();
 
         // Assert
+        Assert.assertTrue(updatedGetAllFiles.isSuccessful());
+
         Assert.assertEquals(updatedFiles.size(), 3);
-        Assert.assertEquals(updatedFiles.get(0), fileNames.get(0));
-        Assert.assertEquals(updatedFiles.get(1), fileNames.get(1));
-        Assert.assertEquals(updatedFiles.get(2), fileNames.get(2));
+
+        Assert.assertEquals(updatedFiles.get(0).getNameAndExtension(), fileNames.get(0));
+        Assert.assertEquals(updatedFiles.get(1).getNameAndExtension(), fileNames.get(1));
+        Assert.assertEquals(updatedFiles.get(2).getNameAndExtension(), fileNames.get(2));
+    }
+
+    @Test
+    public void givenInvalidPath_whenFileDaoDeleteFile_thenOperationFails() {
+        // Arrange
+        FileDao fileDao = new FileDaoImpl();
+        Path invalidPath = Paths.get(PATH.toString() + "/invalid_file.txt");
+
+        // Act
+        OperationResult fileDeleteResult = fileDao.deleteFile(invalidPath);
+
+        // Assert
+        Assert.assertFalse(fileDeleteResult.isSuccessful());
     }
 
     @Test
     public void givenPathAndFileName_whenFileDaoSearchFiles_thenFilesAreFound() {
         // Arrange
-        String nameCriteriaXyz = "xyz";
-        String nameCriteriaA = "a";
-        String nameCriteriaB = "B";
+        String criteriaXyz = "xyz";
+        String criteriaA = "a";
+        String criteriaB = "B";
 
         FileDao fileDao = new FileDaoImpl();
 
         // Act
-        List<String> criteriaXyzResult = fileDao.searchFiles(PATH, nameCriteriaXyz);
+        OperationResult searchResultXyz = fileDao.searchFiles(PATH, criteriaXyz);
+        List<FileObject> criteriaXyzResult = searchResultXyz.getFileObjects();
 
         // Assert
+        Assert.assertTrue(searchResultXyz.isSuccessful());
+
         Assert.assertEquals(criteriaXyzResult.size(), 1);
-        Assert.assertEquals(criteriaXyzResult.get(0), SAMPLE_FILE_NAME_THREE);
+        Assert.assertEquals(criteriaXyzResult.get(0).getNameAndExtension(), SAMPLE_FILE_NAME_THREE);
 
         // Act
-        List<String> criteriaAResult = fileDao.searchFiles(PATH, nameCriteriaA);
+        OperationResult searchResultA = fileDao.searchFiles(PATH, criteriaA);
+        List<FileObject> criteriaAResult = searchResultA.getFileObjects();
 
         // Assert
+        Assert.assertTrue(searchResultA.isSuccessful());
+
         Assert.assertEquals(criteriaAResult.size(), 3);
-        Assert.assertEquals(criteriaAResult.get(0), SAMPLE_FILE_NAME_ONE);
-        Assert.assertEquals(criteriaAResult.get(1), SAMPLE_FILE_NAME_TWO);
-        Assert.assertEquals(criteriaAResult.get(2), SAMPLE_FILE_NAME_THREE);
+
+        Assert.assertEquals(criteriaAResult.get(0).getNameAndExtension(), SAMPLE_FILE_NAME_ONE);
+        Assert.assertEquals(criteriaAResult.get(1).getNameAndExtension(), SAMPLE_FILE_NAME_TWO);
+        Assert.assertEquals(criteriaAResult.get(2).getNameAndExtension(), SAMPLE_FILE_NAME_THREE);
 
         // Act
-        List<String> criteriaBResult = fileDao.searchFiles(PATH, nameCriteriaB);
+        OperationResult searchResultB = fileDao.searchFiles(PATH, criteriaB);
+        List<FileObject> criteriaBResult = searchResultB.getFileObjects();
 
         // Assert
+        Assert.assertTrue(searchResultB.isSuccessful());
+
         Assert.assertEquals(criteriaBResult.size(), 1);
-        Assert.assertEquals(criteriaBResult.get(0), SAMPLE_FILE_NAME_TWO);
+        Assert.assertEquals(criteriaBResult.get(0).getNameAndExtension(), SAMPLE_FILE_NAME_TWO);
     }
 }

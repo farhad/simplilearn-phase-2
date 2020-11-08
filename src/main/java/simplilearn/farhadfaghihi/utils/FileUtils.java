@@ -1,10 +1,13 @@
 package simplilearn.farhadfaghihi.utils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 
 public class FileUtils {
 
@@ -31,5 +34,17 @@ public class FileUtils {
      */
     public static Path getCurrentWorkingDirectory() {
         return Paths.get(System.getProperty("user.dir"));
+    }
+
+
+    public static String getFileLastModifiedTime(File file) throws IOException {
+        Path path = Paths.get(file.getAbsolutePath());
+        BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
+        return attr.lastModifiedTime().toString();
+    }
+
+    public static String getSizeInKB(File file) {
+        long lengthKB = file.length() / 1024;
+        return lengthKB + " KB";
     }
 }
