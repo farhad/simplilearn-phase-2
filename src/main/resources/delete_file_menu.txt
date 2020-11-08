@@ -1,4 +1,2 @@
 Enter the name of the file to delete:
 
-
-
