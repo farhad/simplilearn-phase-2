@@ -24,7 +24,7 @@ public class FileUtilsTest {
     @Test
     public void givenFilePath_whenUsingReadFileContent_thenFileData() throws IOException {
         // Arrange + Act
-        String content = FileUtils.readFileContent(Consts.WELCOME_MESSAGE_FILE_PATH);
+        String content = FileUtils.readFileContent(Consts.WELCOME_MESSAGE_PATH);
 
         // Assert
         Assert.assertTrue(content.contains("Phase 1 Assignment project"));
