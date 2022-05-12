@@ -96,12 +96,9 @@ public class QuickSortTest {
 
     @Test
     public void givenNullList_whenCallingQuickSort_thenEmptyList() {
-        // Arrange
-        List<String> items = null;
-
-        // Act
+        // Arrange + Act
         QuickSorter<String> quickSorter = new QuickSorter<>();
-        List<String> sortedList = quickSorter.sort(items);
+        List<String> sortedList = quickSorter.sort(null);
 
         // Assert
         Assert.assertEquals(sortedList.size(), 0);

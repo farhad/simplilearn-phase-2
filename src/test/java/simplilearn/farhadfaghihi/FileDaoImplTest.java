@@ -25,8 +25,8 @@ public class FileDaoImplTest {
     private static final String SAMPLE_FILE_NAME_THREE = "c_file_for_search_xyz.txt";
 
     private static final String FILE_TO_ADD_NAME = "d_new_file.txt";
-    private static final Path FILE_TO_ADD = Paths.get(PATH.toString() + "/" + FILE_TO_ADD_NAME);
-    private static final Path FILE_TO_DELETE = Paths.get(PATH.toString() + "/" + FILE_TO_ADD_NAME);
+    private static final Path FILE_TO_ADD = Paths.get(PATH + "/" + FILE_TO_ADD_NAME);
+    private static final Path FILE_TO_DELETE = Paths.get(PATH + "/" + FILE_TO_ADD_NAME);
 
     private final ArrayList<String> fileNames = new ArrayList<>();
 
@@ -46,22 +46,22 @@ public class FileDaoImplTest {
     }
 
     private void addSampleFiles() throws IOException {
-        Path sampleFileOne = Paths.get(PATH.toString() + "/" + SAMPLE_FILE_NAME_ONE);
+        Path sampleFileOne = Paths.get(PATH + "/" + SAMPLE_FILE_NAME_ONE);
         Files.createFile(sampleFileOne);
 
-        Path sampleFileTwo = Paths.get(PATH.toString() + "/" + SAMPLE_FILE_NAME_TWO);
+        Path sampleFileTwo = Paths.get(PATH + "/" + SAMPLE_FILE_NAME_TWO);
         Files.createFile(sampleFileTwo);
 
-        Path sampleFileThree = Paths.get(PATH.toString() + "/" + SAMPLE_FILE_NAME_THREE);
+        Path sampleFileThree = Paths.get(PATH + "/" + SAMPLE_FILE_NAME_THREE);
         Files.createFile(sampleFileThree);
     }
 
     private void deleteSampleFiles() throws IOException {
-        Path sampleFileOne = Paths.get(PATH.toString() + "/" + SAMPLE_FILE_NAME_ONE);
+        Path sampleFileOne = Paths.get(PATH + "/" + SAMPLE_FILE_NAME_ONE);
         Files.deleteIfExists(sampleFileOne);
-        Path sampleFileTwo = Paths.get(PATH.toString() + "/" + SAMPLE_FILE_NAME_TWO);
+        Path sampleFileTwo = Paths.get(PATH + "/" + SAMPLE_FILE_NAME_TWO);
         Files.deleteIfExists(sampleFileTwo);
-        Path sampleFileThree = Paths.get(PATH.toString() + "/" + SAMPLE_FILE_NAME_THREE);
+        Path sampleFileThree = Paths.get(PATH + "/" + SAMPLE_FILE_NAME_THREE);
         Files.deleteIfExists(sampleFileThree);
 
         Files.deleteIfExists(FILE_TO_ADD);
@@ -203,7 +203,7 @@ public class FileDaoImplTest {
     public void givenInvalidPath_whenFileDaoDeleteFile_thenOperationFails() {
         // Arrange
         FileDao fileDao = new FileDaoImpl();
-        Path invalidPath = Paths.get(PATH.toString() + "/invalid_file.txt");
+        Path invalidPath = Paths.get(PATH + "/invalid_file.txt");
 
         // Act
         OperationResult fileDeleteResult = fileDao.deleteFile(invalidPath);
